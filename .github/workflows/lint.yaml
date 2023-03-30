@@ -1,0 +1,44 @@
+name: Lint
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  # Run scheduled checks on the main branch
+  schedule:
+  - cron: "0 0 * * 1-5"
+
+jobs:
+  build:
+    # We can specify version if we have a specific target OS
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout source code
+      uses: actions/checkout@v3
+
+    - name: Set up Python 3.10
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+
+    - name: Sort imports with isort
+      uses: isort/isort-action@master
+      with:
+        configuration: "--check-only --profile black"
+
+    - name: Black linting
+      uses: psf/black@stable
+      with:
+        options: "--check --verbose --skip-string-normalization --line-length 120"
+
+    # https://github.com/py-actions/flake8
+    - name: Flake8 linting
+      uses: py-actions/flake8@v2
+      with:
+        flake8-version: 5.0.4
+        max-line-length: "120"
+        plugins: "flake8-quotes"
+        args: "--count --show-source --statistics --per-file-ignores=__init__.py:F401 ."
+  
