@@ -17,7 +17,7 @@ class HookManager:
             raise TypeError(f'Must pass in nn.Module to "HookedModule". Found: {type(model)}')
 
         self.model = model
-        self._forward_hooks = OrderedDict()
+        self._forward_hooks: OrderedDict = OrderedDict()
         # TODO: Later add some for backward hooks
 
     def get_module_by_name(self, target_module_name: str) -> nn.Module:
@@ -52,7 +52,7 @@ class HookManager:
         Raises:
             TypeError: Occurs when foward_hook_function is not callable.
         """
-        if not isinstance(forward_hook_function, t.Callable):
+        if not callable(forward_hook_function):
             raise TypeError('forward_hook_function must be callable. ' f'Passed in: {forward_hook_function}')
         # Need to de-register existing hook function
         self.remove_forward_hook(module_name)
